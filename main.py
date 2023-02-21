@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+from time import sleep
 
 CSV = 'auto.csv'
 HOST = 'https://auto.ria.com/'
@@ -9,7 +10,6 @@ HEADERS = {
     'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
 }
-
 
 def get_html(url, params=''):
     r = requests.get(url, headers=HEADERS, params=params)
@@ -20,7 +20,7 @@ def get_content(html):
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.find_all('section', class_="ticket-item")
     auto = []
-
+    sleep(3)
     for item in items:
         auto.append(
         {
@@ -32,6 +32,7 @@ def get_content(html):
             'foto': HOST + item.find('div', class_='content-bar').find('img').get('src')
         }
     )
+
     return auto
 
 def save_info(items, path):
@@ -51,11 +52,11 @@ def parser():
             html = get_html(URL, params={'page': page})
             auto.extend(get_content(html.text))
             save_info(auto, CSV)
-        pass        #print(auto)
+        pass
     else:
         print('Error')
-
 parser()
+
 
 
 
